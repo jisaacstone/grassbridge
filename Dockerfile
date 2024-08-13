@@ -23,18 +23,28 @@ ENV LD_LIBRARY_PATH="$GISBASE/lib"
 # download data
 RUN mkdir datasets
 RUN wget https://www.fhwa.dot.gov/bridge/nbi/2022/delimited/PA22.txt -O datasets/PA22.csv
-# RUN wget https://www2.census.gov/geo/tiger/TIGER2022/COUNTY/tl_2022_us_county.zip
-RUN wget https://www2.census.gov/geo/tiger/TIGER2022/STATE/tl_2022_us_state.zip
-# RUN wget https://www2.census.gov/geo/tiger/TIGER2023/UAC/tl_2023_us_uac20.zip
-RUN cd datasets && unzip ../*.zip && rm ../*.zip && cd -
+RUN wget https://www2.census.gov/geo/tiger/TIGER2022/COUNTY/tl_2022_us_county.zip
+# RUN wget https://www2.census.gov/geo/tiger/TIGER2022/STATE/tl_2022_us_state.zip
+RUN wget https://www2.census.gov/geo/tiger/TIGER2022/UAC/tl_2022_us_uac20.zip
+RUN cd datasets && unzip ../tl_2022_us_county.zip
+RUN cd datasets && unzip ../tl_2022_us_uac20.zip
 
-# clead up data
-RUN sqlite3 datasets/bridges.db '.import --csv datasets/PA22.csv bridges'
-RUN sqlite3 datasets/bridges.db 'ALTER TABLE bridges ADD COLUMN latitude REAL; ALTER TABLE bridges ADD COLUMN longitude REAL; UPDATE bridges SET latitude = CAST(LAT_016 AS REAL) / 1000000, longitude = -CAST(LONG_017 AS REAL) / 1000000;'
+# clean up data bridge data (decimal lat/lng)
+ADD clean_bridge_data.sql /
+RUN sqlite3 -init clean_bridge_data.sql datasets/bridges.db .quit
 
 # make grass project
-
 RUN mkdir /grassdata
-RUN grass -c epsg:4326 /grassdata/latlng -e
-RUN grass -c v.in.csv input=datasets/PA22.csv output=PA22
+RUN grass -c epsg:4269 /grassdata/latlng -e
+ADD import_data.py /
+RUN python3 import_data.py
 
+# server setup
+ADD https://bootstrap.pypa.io/get-pip.py /
+RUN python3 get-pip.py
+ADD setup.cfg pyproject.toml /
+ADD grassbridge grassbridge
+RUN pip3 install --ignore-installed -e .
+EXPOSE 5000
+
+CMD flask --app grassbridge.app run --host 0.0.0.0 --port 5000 --debug

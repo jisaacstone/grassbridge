@@ -1,0 +1,28 @@
+<!doctype html>
+<title> Grass Bridges </title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<section class="data">
+  <header> Bridge Data </header>
+  {% if results %}
+  <ul>
+  {% for item in results %}
+  <li>{{ item }}</li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+<section class="query">
+  <form method="post">
+    <select name="regions" id="regions-select">
+    {% for name, layername in regions.items() %}
+      <option value="{{ layername }}">{{ name }}</option>
+    {% endfor %}
+    </select>
+    <select name="analysys" id="analysys-select">
+    {% for name, command in commands.items() %}
+      <option value="{{ command }}">{{ name }}</option>
+    {% endfor %}
+    </select>
+    <input type="submit" value="Run">
+  </form>
+</section>
