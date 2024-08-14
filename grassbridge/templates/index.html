@@ -4,11 +4,7 @@
 <section class="data">
   <header> Bridge Data </header>
   {% if results %}
-  <ul>
-  {% for item in results %}
-  <li>{{ item }}</li>
-  {% endfor %}
-  </ul>
+    <img src="{{ url_for('static', filename=results.img) }}">
   {% endif %}
 </section>
 <section class="query">
@@ -21,6 +17,16 @@
     <select name="analysys" id="analysys-select">
     {% for name, command in commands.items() %}
       <option value="{{ command }}">{{ name }}</option>
+    {% endfor %}
+    </select>
+    <select name="column" id="column-select">
+    {% for name, col in columns.items() %}
+      <option value="{{ col }}">{{ name }}</option>
+    {% endfor %}
+    </select>
+    <select name="method" id="method-select">
+    {% for method in methods %}
+      <option value="{{ method }}">{{ method }}</option>
     {% endfor %}
     </select>
     <input type="submit" value="Run">

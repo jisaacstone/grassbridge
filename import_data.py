@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import grass.script as gs
-import grass.exceptions
 
 
 gs.setup.init('grassdata/latlng')
