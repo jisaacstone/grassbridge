@@ -4,8 +4,8 @@ from . import commands
 
 base_context = {
     'regions': {
-        'counties': 'tl_2022_us_county',
-        'cities': 'tl_2022_us_uac20'
+        'counties': 'county',
+        'cities': 'city'
     },
     'commands': {
         'stats': 'stats',

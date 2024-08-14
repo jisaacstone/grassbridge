@@ -12,6 +12,12 @@ gs.run_command('v.in.db', database='datasets/bridges.db',
 
 
 # link the shapefiles
-for shapefile in ('tl_2022_us_county', 'tl_2022_us_uac20'):
-    gs.run_command('v.external', input='datasets',
-                   layer=shapefile)
+for shapefile, newname in (('tl_2022_us_county', 'county'), ('tl_2022_us_uac20', 'city')):
+    #gs.run_command('v.external', input='datasets',
+    #               layer=shapefile)
+    gs.run_command('v.import',
+                   input=f'datasets/{shapefile}.shp',
+                   output=newname)
+    # gs.run_command('g.copy', vector=f'{shapefile},{newname}')
+
+gs.run_command('db.tables')
